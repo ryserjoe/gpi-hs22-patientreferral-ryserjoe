@@ -7,7 +7,7 @@
   <!-- Grundangaben zum Maven-Projekt -->  
   <groupId>ch.zhaw.gpi</groupId>  
   <artifactId>kis-mock</artifactId>
-  <name>Klinikinformationssystem</name>
+  <name>Klinikinformationssysteem</name>
   <version>1.0.0</version>  
 
   <!-- Spring Boot als Parent POM -->
