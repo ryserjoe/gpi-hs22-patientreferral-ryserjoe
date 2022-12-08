@@ -6,8 +6,8 @@
 
   <!-- Grundangaben zum Maven-Projekt -->  
   <groupId>ch.zhaw.gpi</groupId>  
-  <artifactId>kis-mock</artifactId>
-  <name>Klinik Informations System</name>
+  <artifactId>kis-extractor-external-task-client</artifactId>
+  <name>KIS External Task Client</name>
   <version>1.0.0</version>  
 
   <!-- Spring Boot als Parent POM -->
@@ -35,28 +35,6 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
     </dependency>
-    <!-- Importiert die H2-Datenbank-Abhängigkeit, damit die Camunda Process
-        Engine ihre Daten in H2 in-memory ablegen kann -->  
-    <dependency> 
-      <groupId>com.h2database</groupId>  
-      <artifactId>h2</artifactId>
-    </dependency>  
-    <!-- Import die JDBC-Unterstützung für Spring Boot, damit H2 auch 
-        file-basiert sein kann -->  
-    <dependency> 
-      <groupId>org.springframework.boot</groupId>  
-      <artifactId>spring-boot-starter-jdbc</artifactId> 
-    </dependency>
-
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-data-jpa</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-data-rest</artifactId>
-    </dependency>
 
     <!-- In OpenJDK ist die folgende für die XML-Verarbeitung erforderliche 
             Bibliothek nicht mehr standardmässig dabei -->  
@@ -72,6 +50,19 @@
       <artifactId>spring-boot-devtools</artifactId>
       <optional>true</optional>
     </dependency>
+
+    <dependency>
+      <groupId>org.camunda.bpm.springboot</groupId>
+      <artifactId>camunda-bpm-spring-boot-starter-external-task-client</artifactId>
+      <version>7.15.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.camunda.bpm</groupId>
+      <artifactId>camunda-engine</artifactId>
+      <version>7.17.0</version>
+      <scope>compile</scope>
+    </dependency>
+
   </dependencies>
 
   <!-- Konfiguration des Build-Prozesses -->

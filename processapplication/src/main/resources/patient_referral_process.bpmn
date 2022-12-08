@@ -131,22 +131,6 @@
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${formally_approved=='false'}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_0sqckpy" sourceRef="ZuweisungStrukturiertEingereichtStartEvent" targetRef="ZuweisungsantragFormellPrufenUndErganzenTask" />
-    <bpmn:serviceTask id="TerminrelevanteInformationenAusKISLesenTask" name="Terminrelevante Informationen aus KIS lesen" camunda:delegateExpression="${readInformationFromKis}">
-      <bpmn:documentation>Anforderungen
-============
-Für den nachfolgenden Task sollen folgende Informationen aus dem KIS in Prozessvariablen (Bezeichnung in Klammern) extrahiert werden:
-- Patienten-Nachname (pat_lastname)
-- Patienten-Geburtsdatum (pat_birthday)
-- Frühstmögliches Datum für Termin (case_appointment_earliest)
-- Spätmöglichstes Datum für Termin (case_appointment_latest)
-
-
-Weitere Hinweise
-=============
-Diese Anforderung soll nicht in der Prozessapplikation selbst realisiert werden, sondern über einen entsprechend gestalteten Microservice, der als External Task Client auf Aufgaben des Topics GetAppointmentInformation abonniert.</bpmn:documentation>
-      <bpmn:incoming>Flow_10738wk</bpmn:incoming>
-      <bpmn:outgoing>Flow_0ocxv4i</bpmn:outgoing>
-    </bpmn:serviceTask>
     <bpmn:serviceTask id="PatientinFallInKISErfassenTask" name="Patient:in &#38; Fall in KIS erfassen" camunda:delegateExpression="${createPatientAndMedicalCaseAdapter}">
       <bpmn:documentation>Anforderungen
 ===========
@@ -348,6 +332,22 @@ execution.setProcessBusinessKey(executionId);</camunda:script>
       </bpmn:extensionElements>
       <bpmn:outgoing>Flow_0sqckpy</bpmn:outgoing>
     </bpmn:startEvent>
+    <bpmn:serviceTask id="TerminrelevanteInformationenAusKISLesenTask" name="Terminrelevante Informationen aus KIS lesen" camunda:type="external" camunda:topic="GetScheduledAppointmentRelevantInformation">
+      <bpmn:documentation>Anforderungen
+============
+Für den nachfolgenden Task sollen folgende Informationen aus dem KIS in Prozessvariablen (Bezeichnung in Klammern) extrahiert werden:
+- Patienten-Nachname (pat_lastname)
+- Patienten-Geburtsdatum (pat_birthday)
+- Frühstmögliches Datum für Termin (case_appointment_earliest)
+- Spätmöglichstes Datum für Termin (case_appointment_latest)
+
+
+Weitere Hinweise
+=============
+Diese Anforderung soll nicht in der Prozessapplikation selbst realisiert werden, sondern über einen entsprechend gestalteten Microservice, der als External Task Client auf Aufgaben des Topics GetAppointmentInformation abonniert.</bpmn:documentation>
+      <bpmn:incoming>Flow_10738wk</bpmn:incoming>
+      <bpmn:outgoing>Flow_0ocxv4i</bpmn:outgoing>
+    </bpmn:serviceTask>
   </bpmn:process>
   <bpmn:process id="Process_1b3ufno" isExecutable="false">
     <bpmn:laneSet id="LaneSet_1xy3j9e">
@@ -677,16 +677,25 @@ execution.setProcessBusinessKey(executionId);</camunda:script>
         <dc:Bounds x="540" y="1960" width="1600" height="130" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_17i1bj4_di" bpmnElement="ZuweisungStrukturiertEingereichtStartEvent">
-        <dc:Bounds x="602" y="1492" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="592" y="1538" width="55" height="40" />
-        </bpmndi:BPMNLabel>
+      <bpmndi:BPMNShape id="Activity_0nw3039_di" bpmnElement="PatientinFallInKISErfassenTask">
+        <dc:Bounds x="1030" y="1740" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_04psi41_di" bpmnElement="ZuweisungFormellAbgelehntEndEvent">
-        <dc:Bounds x="1012" y="1862" width="36" height="36" />
+      <bpmndi:BPMNShape id="Activity_1w3yl7s_di" bpmnElement="ZustandigeTriageArztinErmittelnTask1">
+        <dc:Bounds x="1180" y="1740" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1p8f1df_di" bpmnElement="KonsultationsterminVereinbarenTask">
+        <dc:Bounds x="1720" y="1980" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1bin1em_di" bpmnElement="FallTriagierenTask">
+        <dc:Bounds x="1360" y="1610" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1sccdmv_di" bpmnElement="ZuweisungsantragFormellPrufenUndErganzenTask">
+        <dc:Bounds x="730" y="1980" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0578i3f_di" bpmnElement="PatientinZugewiesenEndEvent1">
+        <dc:Bounds x="1872" y="2002" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1004" y="1905" width="54" height="40" />
+          <dc:Bounds x="1861" y="2045" width="59" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_0hgn5kp_di" bpmnElement="PrufungErfolgreichGateway" isMarkerVisible="true">
@@ -695,41 +704,46 @@ execution.setProcessBusinessKey(executionId);</camunda:script>
           <dc:Bounds x="921" y="1718" width="58" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_0578i3f_di" bpmnElement="PatientinZugewiesenEndEvent1">
-        <dc:Bounds x="1872" y="2002" width="36" height="36" />
+      <bpmndi:BPMNShape id="Event_04psi41_di" bpmnElement="ZuweisungFormellAbgelehntEndEvent">
+        <dc:Bounds x="1012" y="1862" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1861" y="2045" width="59" height="27" />
+          <dc:Bounds x="1004" y="1905" width="54" height="40" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1sccdmv_di" bpmnElement="ZuweisungsantragFormellPrufenUndErganzenTask">
-        <dc:Bounds x="730" y="1980" width="100" height="80" />
+      <bpmndi:BPMNShape id="Event_17i1bj4_di" bpmnElement="ZuweisungStrukturiertEingereichtStartEvent">
+        <dc:Bounds x="602" y="1492" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="592" y="1538" width="55" height="40" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1bin1em_di" bpmnElement="FallTriagierenTask">
-        <dc:Bounds x="1360" y="1610" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1p8f1df_di" bpmnElement="KonsultationsterminVereinbarenTask">
-        <dc:Bounds x="1720" y="1980" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1w3yl7s_di" bpmnElement="ZustandigeTriageArztinErmittelnTask1">
-        <dc:Bounds x="1180" y="1740" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_0nw3039_di" bpmnElement="PatientinFallInKISErfassenTask">
-        <dc:Bounds x="1030" y="1740" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1lsblx4_di" bpmnElement="TerminrelevanteInformationenAusKISLesenTask">
+      <bpmndi:BPMNShape id="Activity_0ttm4dd_di" bpmnElement="TerminrelevanteInformationenAusKISLesenTask">
         <dc:Bounds x="1540" y="1740" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="Flow_0sqckpy_di" bpmnElement="Flow_0sqckpy">
-        <di:waypoint x="638" y="1510" />
-        <di:waypoint x="680" y="1510" />
-        <di:waypoint x="680" y="2020" />
-        <di:waypoint x="730" y="2020" />
+      <bpmndi:BPMNEdge id="Flow_0x862al_di" bpmnElement="Flow_0x862al">
+        <di:waypoint x="1130" y="1780" />
+        <di:waypoint x="1180" y="1780" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1jbrkm9_di" bpmnElement="Flow_1jbrkm9">
-        <di:waypoint x="830" y="2020" />
-        <di:waypoint x="880" y="2020" />
-        <di:waypoint x="880" y="1780" />
-        <di:waypoint x="925" y="1780" />
+      <bpmndi:BPMNEdge id="Flow_0ocxv4i_di" bpmnElement="Flow_0ocxv4i">
+        <di:waypoint x="1640" y="1780" />
+        <di:waypoint x="1680" y="1780" />
+        <di:waypoint x="1680" y="2020" />
+        <di:waypoint x="1720" y="2020" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_10738wk_di" bpmnElement="Flow_10738wk">
+        <di:waypoint x="1460" y="1650" />
+        <di:waypoint x="1500" y="1650" />
+        <di:waypoint x="1500" y="1780" />
+        <di:waypoint x="1540" y="1780" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1vrxdph_di" bpmnElement="Flow_1vrxdph">
+        <di:waypoint x="1280" y="1780" />
+        <di:waypoint x="1320" y="1780" />
+        <di:waypoint x="1320" y="1650" />
+        <di:waypoint x="1360" y="1650" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_11cxejl_di" bpmnElement="Flow_11cxejl">
+        <di:waypoint x="1820" y="2020" />
+        <di:waypoint x="1872" y="2020" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1u3qmc3_di" bpmnElement="JaSequenceFlow">
         <di:waypoint x="975" y="1780" />
@@ -738,27 +752,11 @@ execution.setProcessBusinessKey(executionId);</camunda:script>
           <dc:Bounds x="988" y="1763" width="13" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0x862al_di" bpmnElement="Flow_0x862al">
-        <di:waypoint x="1130" y="1780" />
-        <di:waypoint x="1180" y="1780" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1vrxdph_di" bpmnElement="Flow_1vrxdph">
-        <di:waypoint x="1280" y="1780" />
-        <di:waypoint x="1320" y="1780" />
-        <di:waypoint x="1320" y="1650" />
-        <di:waypoint x="1360" y="1650" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_10738wk_di" bpmnElement="Flow_10738wk">
-        <di:waypoint x="1460" y="1650" />
-        <di:waypoint x="1500" y="1650" />
-        <di:waypoint x="1500" y="1780" />
-        <di:waypoint x="1540" y="1780" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0ocxv4i_di" bpmnElement="Flow_0ocxv4i">
-        <di:waypoint x="1640" y="1780" />
-        <di:waypoint x="1680" y="1780" />
-        <di:waypoint x="1680" y="2020" />
-        <di:waypoint x="1720" y="2020" />
+      <bpmndi:BPMNEdge id="Flow_1jbrkm9_di" bpmnElement="Flow_1jbrkm9">
+        <di:waypoint x="830" y="2020" />
+        <di:waypoint x="880" y="2020" />
+        <di:waypoint x="880" y="1780" />
+        <di:waypoint x="925" y="1780" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1l5bycp_di" bpmnElement="NeinSequenceFlow">
         <di:waypoint x="950" y="1805" />
@@ -768,9 +766,11 @@ execution.setProcessBusinessKey(executionId);</camunda:script>
           <dc:Bounds x="954" y="1814" width="23" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_11cxejl_di" bpmnElement="Flow_11cxejl">
-        <di:waypoint x="1820" y="2020" />
-        <di:waypoint x="1872" y="2020" />
+      <bpmndi:BPMNEdge id="Flow_0sqckpy_di" bpmnElement="Flow_0sqckpy">
+        <di:waypoint x="638" y="1510" />
+        <di:waypoint x="680" y="1510" />
+        <di:waypoint x="680" y="2020" />
+        <di:waypoint x="730" y="2020" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="Participant_1xb4j26_di" bpmnElement="ZuweiserinParticipant1" isHorizontal="true">
         <dc:Bounds x="160" y="1410" width="300" height="60" />
